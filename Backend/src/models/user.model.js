@@ -9,11 +9,13 @@ const userSchema = new mongoose.Schema({
     },
     contact: { // add country code here
         type: String,
-        required: true
+        required: false,
     },
     password: {
         type: String,
-        required: true
+        required: function () {
+            return !this.googleId; // Password is required only if googleId is not present
+        }
     },
     fullname: {
         type: String,
@@ -23,7 +25,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['buyer', 'seller'],
         default: 'buyer'
-    }
+    }, 
+    googleId: {
+        type: String,
+        required: false
+    },
 });
 
 

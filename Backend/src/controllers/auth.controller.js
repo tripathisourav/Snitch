@@ -42,3 +42,41 @@ export const register = async (req, res) => {
         return res.status(500).json({ message: "Server error" });
     }
 }
+
+export const login = async (req, res) => {
+    const { email, password } = req.body;
+
+    const user = await userModel.findOne({ email });
+    if (!user) {
+        return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+        return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    await sendTokenResponse(user, res, "Login successful");
+}
+
+export const googleCallback = async (req, res) => {
+    const { id, displayName, emails, photos } = req.user;
+    const email = emails[0].value;
+    const profilePic = photos[0].value;
+
+
+    let user = await userModel.findOne({ email });
+    if (!user) {
+        // Create a new user
+        user = await userModel.create({
+            email,
+            googleId: id,
+            fullname: displayName,
+            profilePic
+        });
+    }
+
+    await sendTokenResponse(user, res, "Google login successful");
+
+    res.redirect(config.NODE_ENV === 'production' ? '/' : 'http://localhost:5173'); // Redirect to your frontend after successful login
+}

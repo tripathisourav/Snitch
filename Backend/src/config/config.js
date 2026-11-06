@@ -11,7 +11,21 @@ if(!process.env.JWT_SECRET) {
     process.exit(1);
 }
 
+if(!process.env.CLIENT_ID) {
+    console.error("CLIENT_ID is not defined");
+    process.exit(1);
+}
+
+if(!process.env.CLIENT_SECRET) {
+    console.error("CLIENT_SECRET is not defined");
+    process.exit(1);
+}
+
+
 export const config = {
     mongoUri: process.env.MONGO_URI,
-    JWT_SECRET: process.env.JWT_SECRET
+    JWT_SECRET: process.env.JWT_SECRET,
+    GOOGLE_CLIENT_ID: process.env.CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.CLIENT_SECRET,
+    NODE_ENV: process.env.NODE_ENV || "development",
 }

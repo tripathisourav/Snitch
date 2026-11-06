@@ -1,9 +1,22 @@
-import {Router} from 'express';
-import {validateRegister, validateLogin} from '../validator/auth.validator.js';
-import { register } from '../controllers/auth.controller.js';
+import { Router } from 'express';
+import { validateRegister, validateLogin } from '../validator/auth.validator.js';
+import { register, login, googleCallback } from '../controllers/auth.controller.js';
+import { config } from '../config/config.js';
+import passport from 'passport';
 
 const router = Router();
 
 router.post("/register", validateRegister, register);
+router.post("/login", validateLogin, login);
+
+// api/auth/google
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google/callback',
+    passport.authenticate('google', {
+        failureRedirect: config.NODE_ENV === 'production' ? '/login' : 'http://localhost:5173/login',
+        session: false
+    }),
+    googleCallback,
+);
 
 export default router;
